@@ -1,8 +1,16 @@
-import 'package:catalog/features/main_screen/view/main_screen.dart';
+import 'package:catalog/core/navigation/presentation/widgets/app_router.dart';
+import 'package:catalog/core/services/logger.dart';
+import 'package:catalog/core/theme/theme.dart';
 import 'package:flutter/material.dart';
 
 void main() {
+  _initApp();
   runApp(const MyApp());
+}
+
+void _initApp() {
+  Logger.enable();
+  Logger.info('Application initialized');
 }
 
 class MyApp extends StatelessWidget {
@@ -10,6 +18,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: MainScreen());
+    return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
+      theme: lightTheme,
+      routerConfig: AppRouter.router,
+    );
   }
 }
