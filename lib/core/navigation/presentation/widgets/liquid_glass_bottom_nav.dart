@@ -14,6 +14,9 @@ class LiquidGlassBottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    
     final safeAreaBottom = MediaQuery.of(context).padding.bottom;
     return Container(
       margin: EdgeInsets.only(
@@ -22,10 +25,12 @@ class LiquidGlassBottomNav extends StatelessWidget {
         bottom: safeAreaBottom > 0 ? safeAreaBottom + 8 : 16,
       ),
       child: LiquidGlassLayer(
-        settings: const LiquidGlassSettings(
+        settings: LiquidGlassSettings(
           thickness: 20,
           blur: 10,
-          glassColor: Color(0x33FFFFFF),
+          glassColor: isDark
+              ? const Color(0x33FFFFFF)
+              : const Color(0x33FFFFFF),
           lightIntensity: 1.2,
           ambientStrength: 0.8,
           saturation: 1.2,
@@ -43,18 +48,21 @@ class LiquidGlassBottomNav extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 _buildNavItem(
+                  context: context,
                   index: 0,
                   icon: Icons.store_outlined,
                   activeIcon: Icons.store,
                   label: 'Каталог',
                 ),
                 _buildNavItem(
+                  context: context,
                   index: 1,
                   icon: Icons.shopping_cart_outlined,
                   activeIcon: Icons.shopping_cart,
                   label: 'Корзина',
                 ),
                 _buildNavItem(
+                  context: context,
                   index: 2,
                   icon: Icons.person_outline,
                   activeIcon: Icons.person,
@@ -69,12 +77,21 @@ class LiquidGlassBottomNav extends StatelessWidget {
   }
 
   Widget _buildNavItem({
+    required BuildContext context,
     required int index,
     required IconData icon,
     required IconData activeIcon,
     required String label,
   }) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final isSelected = currentIndex == index;
+    
+    final activeColor = isDark ? AppColors.whiteColor : AppColors.blackColor;
+    final inactiveColor = isDark
+        ? Colors.white.withOpacity(0.6)
+        : Colors.black.withOpacity(0.6);
+    
     return Expanded(
       child: GestureDetector(
         onTap: () => onTap(index),
@@ -84,9 +101,7 @@ class LiquidGlassBottomNav extends StatelessWidget {
           children: [
             Icon(
               isSelected ? activeIcon : icon,
-              color: isSelected
-                  ? AppColors.whiteColor
-                  : Colors.white.withOpacity(0.6),
+              color: isSelected ? activeColor : inactiveColor,
               size: 24,
             ),
             const SizedBox(height: 4),
@@ -95,9 +110,7 @@ class LiquidGlassBottomNav extends StatelessWidget {
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                color: isSelected
-                    ? AppColors.whiteColor
-                    : Colors.white.withOpacity(0.6),
+                color: isSelected ? activeColor : inactiveColor,
               ),
             ),
           ],

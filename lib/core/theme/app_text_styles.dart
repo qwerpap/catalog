@@ -29,4 +29,10 @@ class AppTextStyles {
     fontSize: 14,
     fontWeight: FontWeight.w400,
   );
+
+  static const inter12s400w = TextStyle(
+    fontFamily: _font,
+    fontSize: 12,
+    fontWeight: FontWeight.w400,
+  );
 }

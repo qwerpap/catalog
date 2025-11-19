@@ -8,4 +8,6 @@ class AppColors {
   static const Color inactiveNavColor = Color(0xFF9E9E9E);
   static const Color backgroundColor = Color(0xFF1A1A1A);
   static const Color surfaceColor = Color(0xFF2A2A2A);
+  static const Color lightBackgroundColor = Color(0xFFF5F5F5);
+  static const Color lightSurfaceColor = Color(0xFFFFFFFF);
 }
