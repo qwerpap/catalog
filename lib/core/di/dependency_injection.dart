@@ -1,9 +1,13 @@
 import 'package:catalog/core/network/dio_client.dart';
 import 'package:catalog/core/theme/data/theme_storage.dart';
 import 'package:catalog/core/theme/presentation/bloc/theme_bloc.dart';
+import 'package:catalog/features/cart/data/database/cart_database.dart';
+import 'package:catalog/features/cart/data/datasources/cart_local_datasource.dart';
 import 'package:catalog/features/cart/data/repositories/cart_repository_impl.dart';
 import 'package:catalog/features/cart/domain/repositories/cart_repository.dart';
 import 'package:catalog/features/cart/presentation/bloc/cart/cart_bloc.dart';
+import 'package:catalog/features/catalog/data/database/catalog_database.dart';
+import 'package:catalog/features/catalog/data/datasources/product_local_datasource.dart';
 import 'package:catalog/features/catalog/data/datasources/product_remote_datasource.dart';
 import 'package:catalog/features/catalog/data/repositories/product_repository_impl.dart';
 import 'package:catalog/features/catalog/domain/repositories/product_repository.dart';
@@ -19,7 +23,11 @@ class DependencyInjection {
   DependencyInjection._();
 
   static Dio? _dio;
+  static CatalogDatabase? _catalogDatabase;
+  static CartDatabase? _cartDatabase;
   static ProductRemoteDataSource? _productRemoteDataSource;
+  static ProductLocalDataSource? _productLocalDataSource;
+  static CartLocalDataSource? _cartLocalDataSource;
   static ProductRepository? _productRepository;
   static GetProductsUseCase? _getProductsUseCase;
   static GetProductsByCategoryUseCase? _getProductsByCategoryUseCase;
@@ -37,13 +45,37 @@ class DependencyInjection {
     return _dio!;
   }
 
+  static CatalogDatabase get catalogDatabase {
+    _catalogDatabase ??= CatalogDatabase();
+    return _catalogDatabase!;
+  }
+
+  static CartDatabase get cartDatabase {
+    _cartDatabase ??= CartDatabase();
+    return _cartDatabase!;
+  }
+
   static ProductRemoteDataSource get productRemoteDataSource {
     _productRemoteDataSource ??= ProductRemoteDataSourceImpl(dio);
     return _productRemoteDataSource!;
   }
 
+  static ProductLocalDataSource get productLocalDataSource {
+    _productLocalDataSource ??=
+        ProductLocalDataSourceImpl(catalogDatabase);
+    return _productLocalDataSource!;
+  }
+
+  static CartLocalDataSource get cartLocalDataSource {
+    _cartLocalDataSource ??= CartLocalDataSourceImpl(cartDatabase);
+    return _cartLocalDataSource!;
+  }
+
   static ProductRepository get productRepository {
-    _productRepository ??= ProductRepositoryImpl(productRemoteDataSource);
+    _productRepository ??= ProductRepositoryImpl(
+      productRemoteDataSource,
+      productLocalDataSource,
+    );
     return _productRepository!;
   }
 
@@ -95,7 +127,7 @@ class DependencyInjection {
   }
 
   static CartRepository get cartRepository {
-    _cartRepository ??= CartRepositoryImpl();
+    _cartRepository ??= CartRepositoryImpl(cartLocalDataSource);
     return _cartRepository!;
   }
 

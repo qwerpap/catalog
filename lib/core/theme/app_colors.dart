@@ -10,4 +10,5 @@ class AppColors {
   static const Color surfaceColor = Color(0xFF2A2A2A);
   static const Color lightBackgroundColor = Color(0xFFF5F5F5);
   static const Color lightSurfaceColor = Color(0xFFFFFFFF);
+  static const Color glassSnackBarColor = Color(0x33FFFFFF);
 }

@@ -1,16 +1,17 @@
 import 'package:catalog/core/services/logger.dart';
 import '../../domain/entities/cart_item.dart';
 import '../../domain/repositories/cart_repository.dart';
+import '../datasources/cart_local_datasource.dart';
 
 class CartRepositoryImpl implements CartRepository {
-  CartRepositoryImpl() : _items = <CartItem>[];
+  CartRepositoryImpl(this._localDataSource);
 
-  final List<CartItem> _items;
+  final CartLocalDataSource _localDataSource;
 
   @override
   Future<List<CartItem>> getCartItems() async {
     try {
-      return List<CartItem>.from(_items);
+      return await _localDataSource.getCartItems();
     } catch (e) {
       Logger.error('Failed to get cart items', error: e);
       rethrow;
@@ -20,18 +21,7 @@ class CartRepositoryImpl implements CartRepository {
   @override
   Future<void> addToCart(CartItem item) async {
     try {
-      final existingIndex = _items.indexWhere(
-        (element) => element.product.id == item.product.id,
-      );
-
-      if (existingIndex != -1) {
-        final existingItem = _items[existingIndex];
-        _items[existingIndex] = existingItem.copyWith(
-          quantity: existingItem.quantity + item.quantity,
-        );
-      } else {
-        _items.add(item);
-      }
+      await _localDataSource.addToCart(item);
     } catch (e) {
       Logger.error('Failed to add to cart', error: e);
       rethrow;
@@ -41,7 +31,7 @@ class CartRepositoryImpl implements CartRepository {
   @override
   Future<void> removeFromCart(int productId) async {
     try {
-      _items.removeWhere((item) => item.product.id == productId);
+      await _localDataSource.removeFromCart(productId);
     } catch (e) {
       Logger.error('Failed to remove from cart', error: e);
       rethrow;
@@ -51,18 +41,7 @@ class CartRepositoryImpl implements CartRepository {
   @override
   Future<void> updateQuantity(int productId, int quantity) async {
     try {
-      final index = _items.indexWhere(
-        (element) => element.product.id == productId,
-      );
-
-      if (index != -1) {
-        if (quantity <= 0) {
-          _items.removeAt(index);
-        } else {
-          final existingItem = _items[index];
-          _items[index] = existingItem.copyWith(quantity: quantity);
-        }
-      }
+      await _localDataSource.updateQuantity(productId, quantity);
     } catch (e) {
       Logger.error('Failed to update quantity', error: e);
       rethrow;
@@ -72,7 +51,7 @@ class CartRepositoryImpl implements CartRepository {
   @override
   Future<void> clearCart() async {
     try {
-      _items.clear();
+      await _localDataSource.clearCart();
     } catch (e) {
       Logger.error('Failed to clear cart', error: e);
       rethrow;

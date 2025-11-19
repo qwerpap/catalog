@@ -121,24 +121,27 @@ class ProductDetailsScreen extends StatelessWidget {
                     ),
                   ],
                   const SizedBox(height: 32),
-                  SizedBox(
-                    width: double.infinity,
-                    child: CustomElevatedButton(
-                      onPressed: () {
-                        context.read<CartBloc>().add(
-                              CartAddItem(
-                                CartItem(
-                                  product: product,
-                                  quantity: 1,
+                  SafeArea(
+                    top: false,
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: CustomElevatedButton(
+                        onPressed: () {
+                          context.read<CartBloc>().add(
+                                CartAddItem(
+                                  CartItem(
+                                    product: product,
+                                    quantity: 1,
+                                  ),
                                 ),
-                              ),
-                            );
-                        GlassSnackBar.show(
-                          context,
-                          'Товар добавлен в корзину',
-                        );
-                      },
-                      text: 'Добавить в корзину',
+                              );
+                          GlassSnackBar.show(
+                            context,
+                            'Товар добавлен в корзину',
+                          );
+                        },
+                        text: 'Добавить в корзину',
+                      ),
                     ),
                   ),
                 ],
