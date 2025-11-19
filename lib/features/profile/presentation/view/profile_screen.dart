@@ -1,4 +1,4 @@
-import 'package:catalog/features/global/widgets/custom_app_bar.dart';
+import 'package:catalog/core/shared/widgets/custom_app_bar.dart';
 import 'package:catalog/features/profile/presentation/widgets/theme_switch_tile.dart';
 import 'package:flutter/material.dart';
 

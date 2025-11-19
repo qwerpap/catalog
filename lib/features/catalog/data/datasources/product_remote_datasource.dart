@@ -36,7 +36,8 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
   @override
   Future<List<ProductModel>> getProductsByCategory(String category) async {
     try {
-      final response = await _dio.get('/products/category/$category');
+      final encodedCategory = Uri.encodeComponent(category);
+      final response = await _dio.get('/products/category/$encodedCategory');
       if (response.statusCode == 200) {
         final data = response.data as List<dynamic>;
         return data

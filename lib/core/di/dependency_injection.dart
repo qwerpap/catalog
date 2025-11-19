@@ -7,7 +7,8 @@ import 'package:catalog/features/catalog/domain/repositories/product_repository.
 import 'package:catalog/features/catalog/domain/usecases/get_categories_usecase.dart';
 import 'package:catalog/features/catalog/domain/usecases/get_products_by_category_usecase.dart';
 import 'package:catalog/features/catalog/domain/usecases/get_products_usecase.dart';
-import 'package:catalog/features/catalog/presentation/bloc/catalog_bloc.dart';
+import 'package:catalog/features/catalog/presentation/bloc/catalog/catalog_bloc.dart';
+import 'package:catalog/features/catalog/presentation/bloc/filters/filters_bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -21,6 +22,7 @@ class DependencyInjection {
   static GetProductsByCategoryUseCase? _getProductsByCategoryUseCase;
   static GetCategoriesUseCase? _getCategoriesUseCase;
   static CatalogBloc? _catalogBloc;
+  static FiltersBloc? _filtersBloc;
   static SharedPreferences? _sharedPreferences;
   static ThemeStorage? _themeStorage;
   static ThemeBloc? _themeBloc;
@@ -63,6 +65,11 @@ class DependencyInjection {
       getCategoriesUseCase: getCategoriesUseCase,
     );
     return _catalogBloc!;
+  }
+
+  static FiltersBloc get filtersBloc {
+    _filtersBloc ??= FiltersBloc(catalogBloc);
+    return _filtersBloc!;
   }
 
   static Future<SharedPreferences> get sharedPreferences async {

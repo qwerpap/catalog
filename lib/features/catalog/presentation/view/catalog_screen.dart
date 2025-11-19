@@ -1,10 +1,12 @@
-import 'package:catalog/core/theme/app_text_styles.dart';
-import 'package:catalog/features/catalog/presentation/bloc/catalog_bloc.dart';
-import 'package:catalog/features/catalog/presentation/bloc/catalog_event.dart';
-import 'package:catalog/features/catalog/presentation/bloc/catalog_state.dart';
-import 'package:catalog/features/catalog/presentation/widgets/empty_products_widget.dart';
+import 'package:catalog/features/catalog/presentation/bloc/catalog/catalog_bloc.dart';
+import 'package:catalog/features/catalog/presentation/bloc/catalog/catalog_event.dart';
+import 'package:catalog/features/catalog/presentation/bloc/catalog/catalog_state.dart';
+import 'package:catalog/features/catalog/presentation/widgets/app_bar/catalog_app_bar.dart';
+import 'package:catalog/features/catalog/presentation/widgets/catalog_search_bar.dart';
 import 'package:catalog/features/catalog/presentation/widgets/product_card.dart';
-import 'package:catalog/features/global/widgets/custom_app_bar.dart';
+import 'package:catalog/features/catalog/presentation/widgets/state/empty_state_widget.dart';
+import 'package:catalog/features/catalog/presentation/widgets/state/error_state_widget.dart';
+import 'package:catalog/features/catalog/presentation/widgets/state/loading_state_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -13,70 +15,83 @@ class CatalogScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      behavior: HitTestBehavior.opaque,
+      child: Scaffold(
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(52),
-          child: CustomAppBar(title: 'Catalog'),
+          child: const CatalogAppBar(),
         ),
         body: BlocBuilder<CatalogBloc, CatalogState>(
           builder: (context, state) {
             if (state is CatalogLoading) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
+              return const LoadingStateWidget();
             }
 
             if (state is CatalogError) {
-              final theme = Theme.of(context);
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      state.message,
-                      style: AppTextStyles.inter16s400w.copyWith(
-                        color: theme.colorScheme.onSurface,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () {
-                        context.read<CatalogBloc>().add(
-                              const CatalogLoadProducts(),
-                            );
-                      },
-                      child: const Text('Retry'),
-                    ),
-                  ],
-                ),
-              );
+              return ErrorStateWidget(message: state.message);
             }
 
             if (state is CatalogLoaded) {
-              if (state.products.isEmpty) {
-                return const EmptyProductsWidget();
-              }
+              final filteredProducts = state.filteredAndSortedProducts;
 
-              return GridView.builder(
-                padding: const EdgeInsets.all(8),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 0.65,
-                  crossAxisSpacing: 8,
-                  mainAxisSpacing: 8,
-                ),
-                itemCount: state.products.length,
-                itemBuilder: (context, index) {
-                  return ProductCard(product: state.products[index]);
+              return RefreshIndicator(
+                onRefresh: () async {
+                  context.read<CatalogBloc>().add(
+                    state.selectedCategory != null
+                        ? CatalogLoadProductsByCategory(state.selectedCategory!)
+                        : const CatalogLoadProducts(),
+                  );
                 },
+                child: CustomScrollView(
+                  slivers: [
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: CatalogSearchBar(
+                          onSearchChanged: (query) {
+                            context.read<CatalogBloc>().add(
+                              CatalogSearchProducts(query),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                    if (filteredProducts.isEmpty)
+                      const SliverFillRemaining(child: EmptyStateWidget())
+                    else
+                      SliverPadding(
+                        padding: const EdgeInsets.all(8),
+                        sliver: SliverGrid(
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                childAspectRatio: 0.65,
+                                crossAxisSpacing: 8,
+                                mainAxisSpacing: 8,
+                              ),
+                          delegate: SliverChildBuilderDelegate((
+                            context,
+                            index,
+                          ) {
+                            return ProductCard(
+                              product: filteredProducts[index],
+                            );
+                          }, childCount: filteredProducts.length),
+                        ),
+                      ),
+                  ],
+                ),
               );
             }
 
             return const SizedBox.shrink();
           },
         ),
+      ),
     );
   }
 }
-
