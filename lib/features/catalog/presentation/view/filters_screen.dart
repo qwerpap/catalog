@@ -1,4 +1,3 @@
-import 'package:catalog/core/shared/widgets/custom_elevated_button.dart';
 import 'package:catalog/features/catalog/presentation/bloc/catalog/catalog_bloc.dart';
 import 'package:catalog/features/catalog/presentation/bloc/catalog/catalog_state.dart';
 import 'package:catalog/features/catalog/presentation/bloc/filters/filters_bloc.dart';

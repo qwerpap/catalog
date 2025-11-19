@@ -1,3 +1,4 @@
+import 'package:catalog/core/shared/widgets/animated_tap.dart';
 import 'package:catalog/core/theme/app_colors.dart';
 import 'package:catalog/core/theme/app_text_styles.dart';
 import 'package:flutter/material.dart';
@@ -19,8 +20,8 @@ class CustomElevatedButton extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return ElevatedButton(
-      onPressed: isLoading ? null : onPressed,
+    final button = ElevatedButton(
+      onPressed: null,
       style: ElevatedButton.styleFrom(
         backgroundColor: colorScheme.primary,
         disabledBackgroundColor: colorScheme.primary.withOpacity(0.6),
@@ -45,6 +46,21 @@ class CustomElevatedButton extends StatelessWidget {
                 color: AppColors.whiteColor,
               ),
             ),
+    );
+
+    final wrappedButton = SizedBox(
+      width: double.infinity,
+      child: button,
+    );
+
+    if (isLoading) {
+      return wrappedButton;
+    }
+
+    return AnimatedTap(
+      onTap: onPressed,
+      pressedColor: Colors.black.withOpacity(0.15),
+      child: wrappedButton,
     );
   }
 }

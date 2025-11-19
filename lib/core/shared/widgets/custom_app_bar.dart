@@ -22,7 +22,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       title: Text(
         title,
-        style: AppTextStyles.inter16s600w,
+        style: AppTextStyles.inter18s600w,
       ),
       actions: actions,
       leading: leading,

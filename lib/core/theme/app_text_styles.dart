@@ -35,4 +35,16 @@ class AppTextStyles {
     fontSize: 12,
     fontWeight: FontWeight.w400,
   );
+
+  static const inter18s600w = TextStyle(
+    fontFamily: _font,
+    fontSize: 18,
+    fontWeight: FontWeight.w600,
+  );
+
+  static const inter28s600w = TextStyle(
+    fontFamily: _font,
+    fontSize: 28,
+    fontWeight: FontWeight.w600,
+  );
 }

@@ -1,6 +1,7 @@
 import '../../domain/entities/product.dart';
 import '../../domain/repositories/product_repository.dart';
 import '../datasources/product_remote_datasource.dart';
+import '../models/product_model.dart';
 
 class ProductRepositoryImpl implements ProductRepository {
   ProductRepositoryImpl(this._remoteDataSource);
@@ -9,17 +10,31 @@ class ProductRepositoryImpl implements ProductRepository {
 
   @override
   Future<List<Product>> getProducts() async {
-    return _remoteDataSource.getProducts();
+    final models = await _remoteDataSource.getProducts();
+    return models.map((model) => _toEntity(model)).toList();
   }
 
   @override
   Future<List<Product>> getProductsByCategory(String category) async {
-    return _remoteDataSource.getProductsByCategory(category);
+    final models = await _remoteDataSource.getProductsByCategory(category);
+    return models.map((model) => _toEntity(model)).toList();
   }
 
   @override
   Future<List<String>> getCategories() async {
     return _remoteDataSource.getCategories();
+  }
+
+  Product _toEntity(ProductModel model) {
+    return Product(
+      id: model.id,
+      title: model.title,
+      price: model.price,
+      description: model.description,
+      category: model.category,
+      image: model.image,
+      rating: model.rating,
+    );
   }
 }
 

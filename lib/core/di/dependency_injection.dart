@@ -1,6 +1,9 @@
 import 'package:catalog/core/network/dio_client.dart';
 import 'package:catalog/core/theme/data/theme_storage.dart';
 import 'package:catalog/core/theme/presentation/bloc/theme_bloc.dart';
+import 'package:catalog/features/cart/data/repositories/cart_repository_impl.dart';
+import 'package:catalog/features/cart/domain/repositories/cart_repository.dart';
+import 'package:catalog/features/cart/presentation/bloc/cart/cart_bloc.dart';
 import 'package:catalog/features/catalog/data/datasources/product_remote_datasource.dart';
 import 'package:catalog/features/catalog/data/repositories/product_repository_impl.dart';
 import 'package:catalog/features/catalog/domain/repositories/product_repository.dart';
@@ -26,6 +29,8 @@ class DependencyInjection {
   static SharedPreferences? _sharedPreferences;
   static ThemeStorage? _themeStorage;
   static ThemeBloc? _themeBloc;
+  static CartRepository? _cartRepository;
+  static CartBloc? _cartBloc;
 
   static Dio get dio {
     _dio ??= DioClient.instance;
@@ -87,6 +92,16 @@ class DependencyInjection {
     final storage = await themeStorage;
     _themeBloc ??= ThemeBloc(storage);
     return _themeBloc!;
+  }
+
+  static CartRepository get cartRepository {
+    _cartRepository ??= CartRepositoryImpl();
+    return _cartRepository!;
+  }
+
+  static CartBloc get cartBloc {
+    _cartBloc ??= CartBloc(cartRepository: cartRepository);
+    return _cartBloc!;
   }
 }
 

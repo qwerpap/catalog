@@ -1,7 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:catalog/core/navigation/data/constants/navigation_paths.dart';
 import 'package:catalog/core/theme/app_colors.dart';
 import 'package:catalog/core/theme/app_text_styles.dart';
+import 'package:catalog/features/catalog/data/models/product_model.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../domain/entities/product.dart';
 
 class ProductCard extends StatelessWidget {
@@ -23,7 +26,16 @@ class ProductCard extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Column(
+      child: InkWell(
+        onTap: () {
+          final productJson = ProductModel.fromEntity(product).toJson();
+          context.push(
+            NavigationPaths.productDetailsPath(product.id),
+            extra: productJson,
+          );
+        },
+        borderRadius: BorderRadius.circular(12),
+        child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -33,7 +45,7 @@ class ProductCard extends StatelessWidget {
               aspectRatio: 1,
               child: CachedNetworkImage(
                 imageUrl: product.image,
-                fit: BoxFit.cover,
+                fit: BoxFit.contain,
                 placeholder: (context, url) => Container(
                   color: theme.scaffoldBackgroundColor,
                   child: const Center(
@@ -88,6 +100,7 @@ class ProductCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }
